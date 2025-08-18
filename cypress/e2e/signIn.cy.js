@@ -1,28 +1,23 @@
-/// <reference types="cypress" />
+/// <reference types='cypress' />
 
-Cypress.on('uncaught:exception', () => false);
+describe('Sign in page', () => {
+  it('should provide an ability to log in', () => {
+    cy.visit('https://conduit.mate.academy/');
 
-describe('Sign In Flow', () => {
-  const email = 'mate@mate.com';
-  const password = 'Mate.mate';
-  const username = 'Mate';
+    cy.contains('Sign in')
+      .click();
 
-  it('should sign in via API and display username in header', () => {
-    // logowanie przez API
-    cy.request('POST', 'https://conduit.productionready.io/api/users/login', {
-      user: { email, password }
-    }).then((response) => {
-      expect(response.status).to.eq(200); // upewniamy się, że API działa
-      // zapisujemy token w localStorage
-      window.localStorage.setItem('jwtToken', response.body.user.token);
-    });
+    cy.url().should('include', '/login');
 
-    // odwiedzamy stronę
-    cy.visit('https://react-redux.realworld.io/#/');
+    cy.get('[placeholder="Email"]')
+      .type('mate@mate.com');
+    cy.get('[placeholder="Password"]')
+      .type('Mate.mate');
 
-    // sprawdzamy username w nagłówku
-    cy.get('ul.navbar-nav', { timeout: 15000 })
-      .contains(username)
+    cy.contains('[type="submit"]', 'Sign in')
+      .click();
+
+    cy.get('nav').contains('mate')
       .should('be.visible');
   });
 });
